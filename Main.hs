@@ -24,3 +24,8 @@ version = do
     name <- getProgName
     putStrLn (name ++ " 0.1.0")
 
+validate :: String -> IO ()
+validate versionString =
+    case parseVersionString versionString of
+        Left invalidVersion -> putStrLn "Invalid!"
+        Right validVersion  -> putStrLn "Valid!"
