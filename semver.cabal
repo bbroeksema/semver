@@ -1,0 +1,24 @@
+name:                semver
+version:             0.1.0
+-- synopsis:
+-- description:
+license:             Apache-2.0
+license-file:        LICENSE
+author:              Bertjan Broeksema
+maintainer:          bertjan.broeksema@bigdatarepublic.nl
+-- copyright:
+category:            Development
+build-type:          Simple
+extra-source-files:  ChangeLog.md
+cabal-version:       >=1.10
+
+executable semver
+  main-is:             Main.hs
+  other-modules:
+    Semver
+  -- other-extensions:
+  build-depends:
+    base >=4.11 && <4.12,
+    text >= 1.2.3.1
+  hs-source-dirs:      src
+  default-language:    Haskell2010
