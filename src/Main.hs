@@ -4,6 +4,7 @@ import Semver
 
 main = getArgs >>= parse
 
+parse :: [String] -> IO ()
 parse ["-h"] = usage >> exit
 parse ["-v"] = version >> exit
 parse ("validate":str:[]) = validate str >> exit
