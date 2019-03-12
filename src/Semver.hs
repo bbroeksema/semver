@@ -2,7 +2,7 @@ module Semver where
 
 import Data.Either
 import Data.List
-import qualified Data.Text as T
+import Data.List.Split
 import Text.Read
 
 data VersionError = Missing | LeadingZero | NotAnInt
@@ -21,7 +21,7 @@ data SemanticVersion = SemanticVersion {
 
 parseVersionString :: String -> Either InvalidSemanticVersion SemanticVersion
 parseVersionString versionString = do
-    let parts = splitVersionString versionString
+    let parts = splitOn "." versionString
     let parsedParts = fmap parsePart (take 3 parts)
     partsToSemanticVersion parsedParts
 
@@ -37,6 +37,3 @@ parsePart (x:xs) | x == '0' = Left LeadingZero
 parsePart xs = case (readMaybe xs :: Maybe Int) of
                     Just num -> Right num
                     Nothing  -> Left NotAnInt
-
-splitVersionString :: String -> [String]
-splitVersionString versionString = fmap T.unpack (T.splitOn (T.pack ".") (T.pack versionString))
