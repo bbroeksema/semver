@@ -1,6 +1,7 @@
 import System.Environment
 import System.Exit
-import Semver
+import qualified Semver as S
+import NanoParsec (runParser)
 
 main = getArgs >>= parse
 
@@ -27,6 +28,6 @@ version = do
 
 validate :: String -> IO ()
 validate versionString =
-    case parseVersionString versionString of
+    case runParser S.parseVersionString versionString of
         Left invalidVersion -> putStrLn "Invalid!"
         Right validVersion  -> putStrLn "Valid!"

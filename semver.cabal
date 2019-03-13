@@ -16,6 +16,7 @@ executable semver
   main-is:             Main.hs
   other-modules:
     Semver
+    NanoParsec
   -- other-extensions:
   build-depends:
     base >=4.11 && <4.12,

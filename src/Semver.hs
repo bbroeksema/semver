@@ -1,5 +1,9 @@
 module Semver where
 
+import NanoParsec
+
+import Control.Applicative
+import Data.Char
 import Data.Either
 import Data.List
 import Data.List.Split
@@ -7,33 +11,33 @@ import Text.Read
 
 data VersionError = Missing | LeadingZero | NotAnInt
 
-data InvalidSemanticVersion = InvalidSemanticVersion {
-    ma :: Either VersionError Int,
-    mi :: Either VersionError Int,
-    pa :: Either VersionError Int
-}
 
 data SemanticVersion = SemanticVersion {
     major :: Int,
     minor :: Int,
     patch :: Int
-}
+} deriving (Show)
 
-parseVersionString :: String -> Either InvalidSemanticVersion SemanticVersion
-parseVersionString versionString = do
-    let parts = splitOn "." versionString
-    let parsedParts = fmap parsePart (take 3 parts)
-    partsToSemanticVersion parsedParts
+nonZeroDigit :: Parser Char
+nonZeroDigit = satisfy (\c -> (isDigit c) && (c /= '0'))
 
-partsToSemanticVersion :: [Either VersionError Int] -> Either InvalidSemanticVersion SemanticVersion
-partsToSemanticVersion []            = Left (InvalidSemanticVersion (Left Missing) (Left Missing) (Left Missing))
-partsToSemanticVersion (ma:[])       = Left (InvalidSemanticVersion ma (Left Missing) (Left Missing))
-partsToSemanticVersion (ma:mi:[])    = Left (InvalidSemanticVersion ma mi (Left Missing))
-partsToSemanticVersion ((Right ma):(Right mi):(Right pa):[]) = Right (SemanticVersion ma mi pa)
-partsToSemanticVersion (ma:mi:pa:[]) = Left (InvalidSemanticVersion ma mi pa)
+digit :: Parser Char
+digit = satisfy isDigit
 
-parsePart :: String -> Either VersionError Int
-parsePart (x:xs) | x == '0' = Left LeadingZero
-parsePart xs = case (readMaybe xs :: Maybe Int) of
-                    Just num -> Right num
-                    Nothing  -> Left NotAnInt
+number :: Parser Int
+number = do
+  s  <- nonZeroDigit
+  cs <- many digit
+  return $ read (s:cs)
+
+isDot :: Char -> Bool
+isDot c = c == '.'
+
+parseVersionString :: Parser SemanticVersion
+parseVersionString = do
+  major <- number
+  _     <- satisfy isDot
+  minor <- number
+  _     <- satisfy isDot
+  patch <- number
+  return $ SemanticVersion major minor patch
