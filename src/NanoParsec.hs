@@ -64,3 +64,5 @@ satisfy p = item `bind` \c ->
     then unit c
     else failure
 
+atMostOne :: Parser a -> Parser (Maybe a)
+atMostOne p = (Just <$> p) <|> (pure Nothing)

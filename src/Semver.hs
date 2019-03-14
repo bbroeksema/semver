@@ -15,7 +15,8 @@ data VersionError = Missing | LeadingZero | NotAnInt
 data SemanticVersion = SemanticVersion {
     major :: Int,
     minor :: Int,
-    patch :: Int
+    patch :: Int,
+    preRelease :: Maybe String
 } deriving (Show)
 
 nonZeroDigit :: Parser Char
@@ -38,6 +39,24 @@ number = do
 dot :: Parser Char
 dot = satisfy (\c -> c == '.')
 
+dash :: Parser Char
+dash = satisfy (\c -> c == '-')
+
+alphaNum :: Parser Char
+alphaNum = satisfy isAlphaNum
+
+identifier :: Parser String
+identifier = do
+  c  <- satisfy isAlpha
+  cs <- many alphaNum
+  return (c:cs)
+
+preReleaseIdentifier :: Parser String
+preReleaseIdentifier = do
+  _ <- dash
+  i <- identifier
+  return i
+
 parseVersionString :: Parser SemanticVersion
 parseVersionString = do
   major <- zero <|> number
@@ -45,4 +64,5 @@ parseVersionString = do
   minor <- zero <|> number
   _     <- dot
   patch <- zero <|> number
-  return $ SemanticVersion major minor patch
+  pri   <- atMostOne preReleaseIdentifier
+  return $ SemanticVersion major minor patch pri
