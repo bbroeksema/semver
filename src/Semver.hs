@@ -35,14 +35,14 @@ number = do
   cs <- many digit
   return $ read (s:cs)
 
-isDot :: Char -> Bool
-isDot c = c == '.'
+dot :: Parser Char
+dot = satisfy (\c -> c == '.')
 
 parseVersionString :: Parser SemanticVersion
 parseVersionString = do
   major <- zero <|> number
-  _     <- satisfy isDot
+  _     <- dot
   minor <- zero <|> number
-  _     <- satisfy isDot
+  _     <- dot
   patch <- zero <|> number
   return $ SemanticVersion major minor patch
