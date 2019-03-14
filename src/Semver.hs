@@ -24,6 +24,11 @@ nonZeroDigit = satisfy (\c -> (isDigit c) && (c /= '0'))
 digit :: Parser Char
 digit = satisfy isDigit
 
+zero :: Parser Int
+zero = do
+    z <- satisfy (\c -> (isDigit c) && (c == '0'))
+    return $ read (z:[])
+
 number :: Parser Int
 number = do
   s  <- nonZeroDigit
@@ -35,9 +40,9 @@ isDot c = c == '.'
 
 parseVersionString :: Parser SemanticVersion
 parseVersionString = do
-  major <- number
+  major <- zero <|> number
   _     <- satisfy isDot
-  minor <- number
+  minor <- zero <|> number
   _     <- satisfy isDot
-  patch <- number
+  patch <- zero <|> number
   return $ SemanticVersion major minor patch
