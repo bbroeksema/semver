@@ -30,4 +30,4 @@ validate :: String -> IO ()
 validate versionString =
     case runParser S.parseVersionString versionString of
         Left invalidVersion -> putStrLn "Invalid!"
-        Right validVersion  -> putStrLn "Valid!"
+        Right validVersion  -> putStrLn (show validVersion)
